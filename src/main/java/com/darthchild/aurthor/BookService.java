@@ -17,6 +17,11 @@ public class BookService {
     @Autowired
     ModelMapper modelMapper;
 
+    public BookDTO addBook(BookDTO bookDTO){
+        BookEntity savedBook = repository.save(modelMapper.map(bookDTO, BookEntity.class));
+        return modelMapper.map(savedBook, BookDTO.class);
+    }
+
     public List<BookDTO> getAll(){
         List<BookDTO> list = new ArrayList<>();
         for(BookEntity item : repository.findAll())
@@ -32,22 +37,17 @@ public class BookService {
         );
     }
 
-    public BookDTO addBook(BookDTO bookDTO){
-        BookEntity savedBook = repository.save(modelMapper.map(bookDTO, BookEntity.class));
-        return modelMapper.map(savedBook, BookDTO.class);
-    }
-
     public void deleteBook(Long id){
         if(repository.existsById(id))
             repository.deleteById(id);
         else
-            throw new RuntimeException("Book not found!");
+            throw new ResourceNotFoundException("Book not found with id: " + id);
     }
 
     public BookDTO updateBook(Long id, BookDTO updatedBook) {
 
         BookEntity existingBook = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Book not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
 
         existingBook.setTitle(updatedBook.getTitle());
         existingBook.setAuthor(updatedBook.getAuthor());

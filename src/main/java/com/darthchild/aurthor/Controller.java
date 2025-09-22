@@ -6,7 +6,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -27,29 +26,21 @@ public class Controller {
     }
 
     @PostMapping
-    public BookDTO addBook(@RequestBody BookDTO bookDTO){
-        return service.addBook(bookDTO);
+    public ResponseEntity<BookDTO> addBook(@RequestBody BookDTO bookDTO){
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(service.addBook(bookDTO));
     }
 
     @DeleteMapping("/{id}")
-    public String deleteBook(@PathVariable("id") Long id){
+    public ResponseEntity<String> deleteBook(@PathVariable("id") Long id){
         service.deleteBook(id);
-        return "Success";
+        return ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT)
+                .body("Record deleted successfully");
     }
 
     @PutMapping("/{id}")
-    public BookDTO updateBook(@PathVariable("id") Long id, @RequestBody BookDTO bookDTO){
-        return service.updateBook(id,bookDTO);
+    public ResponseEntity<BookDTO> updateBook(@PathVariable("id") Long id, @RequestBody BookDTO bookDTO){
+        return ResponseEntity.ok(service.updateBook(id,bookDTO));
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<String> test(){
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("abc", "123");
-        headers.add("cdf", "321");
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .headers(headers)
-                .body("lol");
-    }
 }
