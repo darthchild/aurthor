@@ -14,11 +14,15 @@ spring:
         database-platform: org.hibernate.dialect.H2Dialect
         hibernate:
             ddl-auto: create
-        properties:
-            hibernate:
-                show_sql: true
-                format_sql: true
+#        properties:
+#            hibernate:
+#                show_sql: true
+#                format_sql: true
         sql:
             init:
                 mode: always
             data-locations: classpath:data.sql
+logging:
+    level:
+        org:
+            hibernate.orm.connections.pooling: warn
