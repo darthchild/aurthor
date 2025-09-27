@@ -1,5 +1,11 @@
-INSERT INTO BOOKS (title, author, price) VALUES ('The Alchemist', 'Paulo Coelho', 299.0);
-INSERT INTO BOOKS (title, author, price) VALUES ('1984', 'George Orwell', 199.0);
-INSERT INTO BOOKS (title, author, price) VALUES ('The Hobbit', 'J.R.R. Tolkien', 349.0);
-INSERT INTO BOOKS (title, author, price) VALUES ('Clean Code', 'Robert C. Martin', 499.0);
-INSERT INTO BOOKS (title, author, price) VALUES ('Atomic Habits', 'James Clear', 399.0);
+INSERT INTO books (title, author, price) VALUES ('The Alchemist', 'Paulo Coelho', 299.0);
+INSERT INTO books (title, author, price) VALUES ('1984', 'George Orwell', 199.0);
+INSERT INTO books (title, author, price) VALUES ('The Hobbit', 'J.R.R. Tolkien', 349.0);
+INSERT INTO books (title, author, price) VALUES ('Clean Code', 'Robert C. Martin', 499.0);
+INSERT INTO books (title, author, price) VALUES ('Atomic Habits', 'James Clear', 399.0);
+
+INSERT INTO users (username, password, enabled) VALUES ('user1','lol123',true);
+INSERT INTO users (username, password, enabled) VALUES ('admin','lol123',true);
+
+INSERT INTO authorities (username, authority) VALUES ('user1', 'ROLE_USER');
+INSERT INTO authorities (username, authority) VALUES ('admin', 'ROLE_ADMIN');

@@ -1,0 +1,18 @@
+
+services:
+    postgres:
+        image: postgres
+        container_name: springboot_postgres
+        environment:
+            TZ: Asia/Kolkata
+            POSTGRES_USER: darthchild
+            POSTGRES_PASSWORD: changeinprod
+            POSTGRES_DB: aurthorDb
+        ports:
+            - "5000:5432"
+        volumes:
+            - postgresdata:/var/lib/postgresql/data
+
+volumes:
+    postgresdata:
+

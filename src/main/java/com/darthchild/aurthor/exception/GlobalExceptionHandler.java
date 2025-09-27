@@ -15,6 +15,11 @@ public class GlobalExceptionHandler {
                 .body(ex.getMessage());
     }
 
+    public ResponseEntity<String> handleUserNotFound(UserNotFoundException ex){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ex.getMessage());
+    }
+
 //    @ExceptionHandler(Exception.class)
 //    public ResponseEntity<String> handleGlobalException(Exception ex, WebRequest request) {
 //        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

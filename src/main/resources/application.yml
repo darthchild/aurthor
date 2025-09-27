@@ -2,25 +2,21 @@ spring:
     application:
         name: aurthor
     datasource:
-        url: jdbc:h2:mem:testdb
-        driverClassName: org.h2.Driver
-        username: sa
-        password:
-    h2:
-        console:
-            enabled: true
+        url: jdbc:postgresql://localhost:5000/aurthorDb
+        username: darthchild
+        password: changeinprod
     jpa:
         defer-datasource-initialization: true
-        database-platform: org.hibernate.dialect.H2Dialect
-        hibernate:
-            ddl-auto: create
-#        properties:
-#            hibernate:
+        properties:
+            hibernate.jdbc.time_zone: Asia/Kolkata
+            hibernate:
 #                show_sql: true
 #                format_sql: true
-        sql:
-            init:
-                mode: always
+        hibernate:
+            ddl-auto: create-drop
+    sql:
+        init:
+            mode: always
             data-locations: classpath:data.sql
 logging:
     level:

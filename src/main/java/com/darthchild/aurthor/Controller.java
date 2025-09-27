@@ -1,11 +1,10 @@
 package com.darthchild.aurthor;
 
-import com.darthchild.aurthor.models.BookDTO;
+import com.darthchild.aurthor.model.BookDTO;
+import com.darthchild.aurthor.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -44,8 +43,12 @@ public class Controller {
         return ResponseEntity.ok(service.updateBook(id,bookDTO));
     }
 
+    @GetMapping("/test")
+    public String test(){
+        return "Request is served!";
+    }
+
     @GetMapping("/admin")
-    @PreAuthorize("hasRole('ADMIN')")
     public String adminTest(){
         return "Hello admin!";
     }
