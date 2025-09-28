@@ -1,5 +1,10 @@
 package com.darthchild.aurthor.config;
 
+import com.darthchild.aurthor.model.Role;
+import com.darthchild.aurthor.model.User;
+import com.darthchild.aurthor.repo.RoleRepository;
+import com.darthchild.aurthor.repo.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -13,16 +18,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -40,6 +42,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(requests -> requests
                 .requestMatchers("/api/books/admin").hasRole("ADMIN")
+                .requestMatchers("/users/register").permitAll()
                 .anyRequest()
                 .authenticated());
 
@@ -65,33 +68,31 @@ public class SecurityConfig {
         return provider;
     }
 
+    @Bean
+    @Transactional
+    public CommandLineRunner initUsers(UserRepository userRepository, RoleRepository roleRepository) {
+        return args -> {
 
-//    @Bean
-//    public UserDetailsService userDetailsService(){
-//        return new JdbcUserDetailsManager(dataSource);
-//    }
-//    @Bean
-//    public CommandLineRunner initializeUsers(UserDetailsService userDetailsService) {
-//        return args -> {
-//            JdbcUserDetailsManager udm = (JdbcUserDetailsManager) userDetailsService;
-//
-//            if (!udm.userExists("user1")) {
-//                udm.createUser(
-//                        User.withUsername("user1")
-//                                .password(passwordEncoder().encode("lol123"))
-//                                .roles("USER")
-//                                .build()
-//                );
-//            }
-//
-//            if (!udm.userExists("admin")) {
-//                udm.createUser(
-//                        User.withUsername("admin")
-//                                .password(passwordEncoder().encode("lol123"))
-//                                .roles("ADMIN")
-//                                .build()
-//                );
-//            }
-//        };
-//    }
+            // Create users
+            User user1 = User.builder()
+                    .username("user1")
+                    .password("lol123")
+                    .enabled(true)
+                    .build();
+
+            User admin = User.builder()
+                    .username("admin")
+                    .password("lol123")
+                    .enabled(true)
+                    .build();
+
+            userRepository.saveAll(List.of(user1, admin));
+
+            // Create Roles
+            roleRepository.saveAll(List.of(
+                    Role.builder().role("ROLE_USER").user(user1).build(),
+                    Role.builder().role("ROLE_ADMIN").user(admin).build()
+            ));
+        };
+    }
 }

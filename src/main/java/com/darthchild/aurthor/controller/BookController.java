@@ -1,4 +1,4 @@
-package com.darthchild.aurthor;
+package com.darthchild.aurthor.controller;
 
 import com.darthchild.aurthor.model.BookDTO;
 import com.darthchild.aurthor.service.BookService;
@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
-public class Controller {
+public class BookController {
 
     @Autowired
     private BookService service;

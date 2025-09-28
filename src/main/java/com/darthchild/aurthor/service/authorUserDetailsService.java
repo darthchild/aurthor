@@ -23,4 +23,13 @@ public class authorUserDetailsService implements UserDetailsService {
 
         return new UserPrincipal(user);
     }
+
+    public boolean userExists(String username) {
+        try {
+            return userRepository.findByUsername(username).isPresent();
+        } catch (Exception e) {
+            System.err.println("Error checking user existence: " + e.getMessage());
+            return false;
+        }
+    }
 }
