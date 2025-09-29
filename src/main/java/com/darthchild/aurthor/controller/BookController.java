@@ -48,9 +48,4 @@ public class BookController {
         return "Request is served!";
     }
 
-    @GetMapping("/admin")
-    public String adminTest(){
-        return "Hello admin!";
-    }
-
 }

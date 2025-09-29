@@ -19,8 +19,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.sql.DataSource;
@@ -32,17 +32,14 @@ import java.util.List;
 public class SecurityConfig {
 
     @Autowired
-    private DataSource dataSource;
-
-    @Autowired
     private UserDetailsService userDetailsService;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.authorizeHttpRequests(requests -> requests
-                .requestMatchers("/api/books/admin").hasRole("ADMIN")
                 .requestMatchers("/users/register").permitAll()
+                .requestMatchers("/users/admin").hasRole("ADMIN")
                 .anyRequest()
                 .authenticated());
 
@@ -56,15 +53,15 @@ public class SecurityConfig {
                 .build();
     }
 
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(12);
+    }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
-        provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+        provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
 
@@ -76,13 +73,13 @@ public class SecurityConfig {
             // Create users
             User user1 = User.builder()
                     .username("user1")
-                    .password("lol123")
+                    .password(passwordEncoder().encode("lol123"))
                     .enabled(true)
                     .build();
 
             User admin = User.builder()
                     .username("admin")
-                    .password("lol123")
+                    .password(passwordEncoder().encode("lol123"))
                     .enabled(true)
                     .build();
 

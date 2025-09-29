@@ -6,6 +6,7 @@ import com.darthchild.aurthor.model.UserDTO;
 import com.darthchild.aurthor.repo.RoleRepository;
 import com.darthchild.aurthor.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -19,10 +20,13 @@ public class UserService {
     @Autowired
     RoleRepository roleRepository;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     public Boolean addUser(UserDTO dto){
         User savedUser = userRepository.save(User.builder()
                 .username(dto.getUsername())
-                .password(dto.getPassword())
+                .password(passwordEncoder.encode(dto.getPassword()))
                 .enabled(dto.getEnabled())
                 .build()
         );

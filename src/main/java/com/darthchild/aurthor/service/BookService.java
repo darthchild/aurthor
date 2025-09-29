@@ -3,7 +3,7 @@ package com.darthchild.aurthor.service;
 import com.darthchild.aurthor.repo.BookRepository;
 import com.darthchild.aurthor.exception.ResourceNotFoundException;
 import com.darthchild.aurthor.model.BookDTO;
-import com.darthchild.aurthor.model.BookEntity;
+import com.darthchild.aurthor.model.Book;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,13 +19,13 @@ public class BookService {
     ModelMapper modelMapper;
 
     public BookDTO addBook(BookDTO bookDTO){
-        BookEntity savedBook = repository.save(modelMapper.map(bookDTO, BookEntity.class));
+        Book savedBook = repository.save(modelMapper.map(bookDTO, Book.class));
         return modelMapper.map(savedBook, BookDTO.class);
     }
 
     public List<BookDTO> getAll(){
         List<BookDTO> list = new ArrayList<>();
-        for(BookEntity item : repository.findAll())
+        for(Book item : repository.findAll())
             list.add(modelMapper.map(item, BookDTO.class));
         return list;
     }
@@ -47,7 +47,7 @@ public class BookService {
 
     public BookDTO updateBook(Long id, BookDTO updatedBook) {
 
-        BookEntity existingBook = repository.findById(id)
+        Book existingBook = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
 
         existingBook.setTitle(updatedBook.getTitle());
