@@ -1,29 +1,37 @@
 package com.darthchild.aurthor.service;
 
+import com.darthchild.aurthor.JWT.JwtUtils;
 import com.darthchild.aurthor.model.Role;
 import com.darthchild.aurthor.model.User;
 import com.darthchild.aurthor.model.UserDTO;
 import com.darthchild.aurthor.repo.RoleRepository;
 import com.darthchild.aurthor.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @Service
 public class UserService {
 
     @Autowired
-    UserRepository userRepository;
-
+    private UserRepository userRepository;
     @Autowired
-    RoleRepository roleRepository;
-
+    private RoleRepository roleRepository;
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AuthenticationManager authManager;
+    @Autowired
+    private JwtUtils jwtUtils;
 
-    public Boolean addUser(UserDTO dto){
+    public Boolean register(UserDTO dto){
         User savedUser = userRepository.save(User.builder()
                 .username(dto.getUsername())
                 .password(passwordEncoder.encode(dto.getPassword()))
@@ -41,6 +49,19 @@ public class UserService {
             );
         }
         return savedUser.getId() != null;
+    }
+
+    public String verifyUser(UserDTO dto){
+        Authentication authentication = authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword())
+        );
+
+        Map<String,Object> map = new HashMap<>();
+
+        if(authentication.isAuthenticated())
+            return jwtUtils.generateToken(dto.getUsername(),map);
+        else
+            return "Couldn't authenticate user!";
     }
 
 }
