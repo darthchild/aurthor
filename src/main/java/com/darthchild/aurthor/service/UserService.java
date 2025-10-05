@@ -14,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -31,6 +30,10 @@ public class UserService {
     @Autowired
     private JwtUtils jwtUtils;
 
+    /**
+     * Converts client's incoming data which is in UserDTO form to
+     * User and Role entities, then saves them in the database
+     */
     public Boolean register(UserDTO dto){
         User savedUser = userRepository.save(User.builder()
                 .username(dto.getUsername())
@@ -40,7 +43,6 @@ public class UserService {
         );
 
         Set<String> roleSet = dto.getRoles();
-
         for(String role : roleSet){
             roleRepository.save(Role.builder()
                     .role(role)
@@ -51,15 +53,20 @@ public class UserService {
         return savedUser.getId() != null;
     }
 
+    /**
+     * Verifies the user's credentials by authenticating with the <b>AuthenticationManager</b>
+     * <p>
+     * It creates an unauthenticated <b>UsernamePasswordAuthenticationToken</b> using the provided
+     * username and password, and attempts authentication. If successful, it issues a JWT
+     * token for the user; otherwise, it returns an error message.
+     */
     public String verifyUser(UserDTO dto){
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword())
         );
 
-        Map<String,Object> map = new HashMap<>();
-
         if(authentication.isAuthenticated())
-            return jwtUtils.generateToken(dto.getUsername(),map);
+            return jwtUtils.generateToken(dto.getUsername(),new HashMap<>());
         else
             return "Couldn't authenticate user!";
     }

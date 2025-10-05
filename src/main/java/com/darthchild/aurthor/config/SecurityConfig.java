@@ -83,7 +83,6 @@ public class SecurityConfig {
      *
      * @return an AuthenticationProvider instance
      */
-
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
@@ -97,9 +96,8 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-
     /**
-     * Initializes demo users for testing purposes
+     * Initializes demo users in the database for testing purposes
      */
     @Bean
     @Transactional
