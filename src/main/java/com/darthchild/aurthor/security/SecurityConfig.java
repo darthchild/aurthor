@@ -1,10 +1,10 @@
-package com.darthchild.aurthor.config;
+package com.darthchild.aurthor.security;
 
-import com.darthchild.aurthor.JWT.JwtFilter;
-import com.darthchild.aurthor.model.Role;
-import com.darthchild.aurthor.model.User;
-import com.darthchild.aurthor.repo.RoleRepository;
-import com.darthchild.aurthor.repo.UserRepository;
+import com.darthchild.aurthor.security.JWT.JwtFilter;
+import com.darthchild.aurthor.security.model.Role;
+import com.darthchild.aurthor.security.model.User;
+import com.darthchild.aurthor.security.repo.RoleRepository;
+import com.darthchild.aurthor.security.repo.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -19,7 +19,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,7 +26,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.sql.DataSource;
 import java.util.List;
 
 /**
@@ -75,13 +73,7 @@ public class SecurityConfig {
 
     /**
      * Configures the authentication provider to use the custom UserDetailsService
-     * and the defined password encoder. <br>
-     * <br>
-     * AuthenticationProvider is responsible for verifying user credentials during login attempts
-     * uses the custom UserDetailsService to load user information from the database and the
-     *  PasswordEncoder to check passwords.
-     *
-     * @return an AuthenticationProvider instance
+     * and the defined password encoder.
      */
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -90,6 +82,13 @@ public class SecurityConfig {
         return provider;
     }
 
+    /**
+     * Exposes the {@link AuthenticationManager} bean from Spring Security's
+     * {@link AuthenticationConfiguration}.
+     * <p>
+     * This allows the application to inject and use the <b>AuthenticationManager</b>
+     * (e.g., in a login service) to perform authentication.
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
             throws Exception {

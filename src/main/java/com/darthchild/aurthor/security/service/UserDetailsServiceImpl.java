@@ -1,8 +1,8 @@
-package com.darthchild.aurthor.service;
+package com.darthchild.aurthor.security.service;
 
-import com.darthchild.aurthor.model.UserPrincipal;
-import com.darthchild.aurthor.repo.UserRepository;
-import com.darthchild.aurthor.model.User;
+import com.darthchild.aurthor.security.model.UserPrincipal;
+import com.darthchild.aurthor.security.repo.UserRepository;
+import com.darthchild.aurthor.security.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
  * authentication and authorization mechanisms
  */
 @Service
-public class AurthorUserDetailsService implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     UserRepository userRepository;

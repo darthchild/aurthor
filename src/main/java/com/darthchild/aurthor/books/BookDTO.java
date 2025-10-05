@@ -1,4 +1,4 @@
-package com.darthchild.aurthor.model;
+package com.darthchild.aurthor.books;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

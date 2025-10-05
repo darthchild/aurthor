@@ -1,6 +1,6 @@
-package com.darthchild.aurthor.repo;
+package com.darthchild.aurthor.security.repo;
 
-import com.darthchild.aurthor.model.Role;
+import com.darthchild.aurthor.security.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

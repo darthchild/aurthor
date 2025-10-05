@@ -1,4 +1,4 @@
-package com.darthchild.aurthor.model;
+package com.darthchild.aurthor.security.model;
 
 import lombok.Data;
 import java.util.Set;

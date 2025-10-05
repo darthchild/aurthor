@@ -1,7 +1,5 @@
-package com.darthchild.aurthor.controller;
+package com.darthchild.aurthor.books;
 
-import com.darthchild.aurthor.model.BookDTO;
-import com.darthchild.aurthor.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

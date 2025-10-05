@@ -1,4 +1,4 @@
-package com.darthchild.aurthor.JWT;
+package com.darthchild.aurthor.security.JWT;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -16,8 +16,12 @@ import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.darthchild.aurthor.model.UserPrincipal;
+import com.darthchild.aurthor.security.model.UserPrincipal;
 
+/**
+ * Helper class to generate and validate JWTs.
+ * Encapsulates secret key, expiration logic, and claim parsing.
+ */
 @Component
 public class JwtUtils {
 

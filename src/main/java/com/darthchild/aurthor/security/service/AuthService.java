@@ -1,11 +1,11 @@
-package com.darthchild.aurthor.service;
+package com.darthchild.aurthor.security.service;
 
-import com.darthchild.aurthor.JWT.JwtUtils;
-import com.darthchild.aurthor.model.Role;
-import com.darthchild.aurthor.model.User;
-import com.darthchild.aurthor.model.UserDTO;
-import com.darthchild.aurthor.repo.RoleRepository;
-import com.darthchild.aurthor.repo.UserRepository;
+import com.darthchild.aurthor.security.JWT.JwtUtils;
+import com.darthchild.aurthor.security.model.Role;
+import com.darthchild.aurthor.security.model.User;
+import com.darthchild.aurthor.security.model.UserDTO;
+import com.darthchild.aurthor.security.repo.RoleRepository;
+import com.darthchild.aurthor.security.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 @Service
-public class UserService {
+public class AuthService {
 
     @Autowired
     private UserRepository userRepository;
@@ -54,11 +54,12 @@ public class UserService {
     }
 
     /**
-     * Verifies the user's credentials by authenticating with the <b>AuthenticationManager</b>
+     * Verifies the user's credentials by authenticating with the {@link AuthenticationManager}
      * <p>
-     * It creates an unauthenticated <b>UsernamePasswordAuthenticationToken</b> using the provided
-     * username and password, and attempts authentication. If successful, it issues a JWT
-     * token for the user; otherwise, it returns an error message.
+     * It creates an unauthenticated <b>Authentication</b> object (using <b>UsernamePasswordAuthenticationToken</b>)
+     * with the provided username & password, passes it to the AuthManager. Then attempts
+     * authentication, if successful it issues a JWT token for the user; otherwise returns an
+     * error message.
      */
     public String verifyUser(UserDTO dto){
         Authentication authentication = authManager.authenticate(

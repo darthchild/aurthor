@@ -1,4 +1,4 @@
-package com.darthchild.aurthor.model;
+package com.darthchild.aurthor.security.model;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -7,8 +7,8 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Essentially a wrapper around the application's User entity
- * that adapts it to conform to Spring Security's UserDetails contract
+ * Essentially a wrapper around the application's <b>User</b> entity
+ * that adapts it to conform to Spring Security's <b>UserDetails</b> contract
  * so it can integrate into its authentication and authorization mechanisms
  */
 public class UserPrincipal implements UserDetails {
@@ -20,7 +20,7 @@ public class UserPrincipal implements UserDetails {
     }
 
     /**
-     * Converts the User's roles into a collection of GrantedAuthority objects
+     * Converts the User's roles into a collection of <b>GrantedAuthority</b> objects
      * so that Spring Security can enforce role-based access.
      */
     @Override

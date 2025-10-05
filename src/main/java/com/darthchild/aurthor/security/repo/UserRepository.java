@@ -1,10 +1,9 @@
-package com.darthchild.aurthor.repo;
+package com.darthchild.aurthor.security.repo;
 
-import com.darthchild.aurthor.model.User;
+import com.darthchild.aurthor.security.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Repository

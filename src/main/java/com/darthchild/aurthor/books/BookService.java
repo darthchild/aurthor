@@ -1,9 +1,6 @@
-package com.darthchild.aurthor.service;
+package com.darthchild.aurthor.books;
 
-import com.darthchild.aurthor.repo.BookRepository;
 import com.darthchild.aurthor.exception.ResourceNotFoundException;
-import com.darthchild.aurthor.model.BookDTO;
-import com.darthchild.aurthor.model.Book;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

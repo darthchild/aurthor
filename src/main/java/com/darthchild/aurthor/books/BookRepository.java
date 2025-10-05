@@ -1,6 +1,5 @@
-package com.darthchild.aurthor.repo;
+package com.darthchild.aurthor.books;
 
-import com.darthchild.aurthor.model.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

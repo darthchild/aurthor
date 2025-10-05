@@ -1,7 +1,7 @@
-package com.darthchild.aurthor.JWT;
+package com.darthchild.aurthor.security.JWT;
 
-import com.darthchild.aurthor.model.UserPrincipal;
-import com.darthchild.aurthor.service.AurthorUserDetailsService;
+import com.darthchild.aurthor.security.model.UserPrincipal;
+import com.darthchild.aurthor.security.service.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,9 +16,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 /**
- * Intercepts each request to validate accompanying JWT token then
- * sets the Auth object in the SecurityContext so request can proceed
- * with Authenticated access to the next filter
+ * Intercepts each request, extracts accompanying JWT token, validates it,
+ * then sets the Auth object in the SecurityContext so request can proceed
+ * with Authenticated access to the next filter in the chain
  */
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -26,7 +26,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtils jwtUtils;
     @Autowired
-    private AurthorUserDetailsService userDetailsService;
+    private UserDetailsServiceImpl userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
