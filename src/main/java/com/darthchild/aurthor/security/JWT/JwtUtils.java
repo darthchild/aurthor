@@ -1,87 +1,86 @@
 package com.darthchild.aurthor.security.JWT;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
-import org.slf4j.LoggerFactory;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.darthchild.aurthor.security.model.UserPrincipal;
 
 /**
- * Helper class to generate and validate JWTs.
- * Encapsulates secret key, expiration logic, and claim parsing.
+ * Helper class to generate and validate JWTs
  */
 @Component
 public class JwtUtils {
 
-    private String secretKey = "";
-    private static final Logger log = LoggerFactory.getLogger(JwtUtils.class);
+    @Value("${jwt.secret}")
+    private String secretKey;
 
-    public JwtUtils() {
-        try {
-            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
-            SecretKey sk = keyGen.generateKey();
-            secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Value("${jwt.expirationMs}")
+    private int jwtExpirationMs;
 
-    /**
-     * Decodes the configured Base64-encoded secret key and generates a
-     * {@link javax.crypto.SecretKey} instance for signing and verifying JWT tokens.
-     * <p>
-     * The method performs the following steps:
-     * <ul>
-     *   <li>Decodes the secret key from its Base64 representation</li>
-     *   <li>Creates an HMAC-SHA key using the decoded bytes</li>
-     *   <li>Logs the generated key in Base64URL format for debugging purposes</li>
-     * </ul>
-     *
-     * @return the {@link SecretKey} derived from the Base64-encoded secret key,
-     *         suitable for HMAC signing in JWT operations
-     * @throws IllegalArgumentException if the secret key is invalid or
-     *         cannot be decoded
-     */
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
+
     private SecretKey getKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        SecretKey key = Keys.hmacShaKeyFor(keyBytes);
-        log.debug("JWT Secret Key (Base64URL): {}", Encoders.BASE64URL.encode(key.getEncoded()));
-        return key;
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     /**
      * Generates a JWT token for a given username and additional claims
-     * @return signed JWT as a compact string
+     * @return signed JWT as a compact <b>Base64Url</b> encoded string
      */
     public String generateToken(String username, Map<String, Object> claims){
         return Jwts.builder()
                 .claims(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 180 * 1000 * 60)) // valid for 3hrs
+                .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs)) // valid for 24hrs
                 .signWith(getKey())
                 .compact();
     }
 
     /**
-     * Validates a JWT token by checking that the username in the token matches the
-     * given <b>User</b> and token expiration
+     * Validates the given JWT token by verifying its signature and parsing its claims.
+     *
+     * @param token the JWT token string to validate
+     * @return true if the token is well-formed, has a valid signature, and is not expired or unsupported; false otherwise
      */
-    public boolean validateToken(String token, UserPrincipal userPrincipal) {
-        final String username = extractUsername(token);
-        return (username.equals(userPrincipal.getUsername()) && !isTokenExpired(token));
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith(getKey())
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
+        } catch (MalformedJwtException e) {
+            logger.error("Invalid JWT token: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            logger.error("JWT token is expired: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            logger.error("JWT token is unsupported: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.error("JWT claims string is empty: {}", e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Extracts the JWT token string from the Authorization header
+     */
+    public String extractToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer "))
+            // remove Bearer prefix
+            return authHeader.substring(7);
+        return null;
     }
 
     public String extractUsername(String token) {

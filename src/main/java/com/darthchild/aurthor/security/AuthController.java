@@ -8,25 +8,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/auth")
 public class AuthController {
 
     @Autowired
     private AuthService userService;
 
-    @GetMapping("/admin")
-    public String adminTest(){
-        return "Hello admin!";
-    }
-
     /**
-     * @return JWT token string if authenticated, else error message
+     * @return Base64Url encoded <b>JWT token string</b> if authenticated, else error message
      */
     @PostMapping("/login")
     public String loginUser(@RequestBody UserDTO userDTO){
         return userService.verifyUser(userDTO);
     }
-
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody UserDTO userDTO){

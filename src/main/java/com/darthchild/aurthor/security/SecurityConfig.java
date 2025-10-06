@@ -51,9 +51,9 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.authorizeHttpRequests(requests -> requests
-                .requestMatchers("/users/register").permitAll()
-                .requestMatchers("/users/login").permitAll()
-                .requestMatchers("/users/admin").hasRole("ADMIN")
+                .requestMatchers("/auth/register").permitAll()
+                .requestMatchers("/auth/login").permitAll()
+                .requestMatchers("/api/books/admin").hasRole("ADMIN")
                 .anyRequest()
                 .authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

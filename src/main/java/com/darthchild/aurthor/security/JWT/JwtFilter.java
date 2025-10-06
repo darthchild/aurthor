@@ -6,9 +6,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNullApi;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -18,46 +23,65 @@ import java.io.IOException;
 /**
  * Intercepts each request, extracts accompanying JWT token, validates it,
  * then sets the Auth object in the SecurityContext so request can proceed
- * with Authenticated access to the next filter in the chain
+ * marked as <b>authenticated</b> ✅
  */
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtUtils jwtUtils;
+
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
+
+    /**
+     * Determines whether the filter should be skipped for this request based on the request path.
+     * @return true if the request path indicates an authentication endpoint, causing the filter to be bypassed; false otherwise
+     */
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.contains("/auth");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        
+        String token = jwtUtils.extractToken(request);
+        String username = jwtUtils.extractUsername(token);
+        Authentication authStatus = SecurityContextHolder.getContext().getAuthentication();
 
-        String authHeader = request.getHeader("Authorization");
-        String token = null;
-        String username = null;
+        try {
+            /*
+            Checks:
+              if request isn't already authenticated,
+              token presence & validity
+            */
+            if (authStatus == null && token != null && jwtUtils.validateToken(token)) {
 
-        if(authHeader != null && authHeader.startsWith("Bearer")){
-            token = authHeader.substring(7);
-            username = jwtUtils.extractUsername(token);
-        }
+                UserPrincipal user = (UserPrincipal) userDetailsService.loadUserByUsername(username);
 
-        if(username != null && SecurityContextHolder
-                .getContext().getAuthentication() == null){ // meaning Auth hasn't been done yet
-
-            UserPrincipal userPrincipal = (UserPrincipal) userDetailsService.loadUserByUsername(username);
-
-            // if validation successful
-            if(jwtUtils.validateToken(token,userPrincipal)){
-                // pass details to next filter in the chain
+                // creates a new authenticated Auth obj
                 UsernamePasswordAuthenticationToken upaToken = new UsernamePasswordAuthenticationToken(
-                        userPrincipal, null, userPrincipal.getAuthorities()
+                        user,
+                        null,
+                        user.getAuthorities()
                 );
-                // pass the "request" obj too
+
+                // attach the "request" obj too
                 upaToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                // set the token in Security Context (adds token in the chain)
+
+                // Store the authenticated user details (Auth obj) in the SecurityContext so
+                // that downstream filters and controllers recognize this request as authenticated
                 SecurityContextHolder.getContext().setAuthentication(upaToken);
             }
+        } catch (Exception e) {
+            logger.error("Could not set user authentication", e);
         }
-        filterChain.doFilter(request,response);
+
+        filterChain.doFilter(request, response);
     }
 }
