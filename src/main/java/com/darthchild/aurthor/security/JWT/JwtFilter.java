@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Intercepts each request, extracts accompanying JWT token, validates it,
@@ -34,6 +35,11 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
+    // Define all paths that should skip JWT validation entirely
+    private static final List<String> EXCLUDED_PATHS = List.of(
+            "/auth", "/swagger-ui", "/v3/api-docs"
+    );
+
     private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
 
     /**
@@ -43,24 +49,28 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        return path.contains("/auth");
+        return EXCLUDED_PATHS.stream().anyMatch(path::startsWith);
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        
-        String token = jwtUtils.extractToken(request);
-        String username = jwtUtils.extractUsername(token);
-        Authentication authStatus = SecurityContextHolder.getContext().getAuthentication();
 
         try {
-            /*
-            Checks:
-              if request isn't already authenticated,
-              token presence & validity
-            */
-            if (authStatus == null && token != null && jwtUtils.validateToken(token)) {
+
+            String token = jwtUtils.extractToken(request);
+
+            // Skip processing if no token present (let request pass as unauthenticated)
+            if (token == null || token.isBlank()) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            String username = jwtUtils.extractUsername(token);
+            Authentication authStatus = SecurityContextHolder.getContext().getAuthentication();
+
+            // Checks: if request isn't already authenticated & Token validity
+            if (authStatus == null && jwtUtils.validateToken(token)) {
 
                 UserPrincipal user = (UserPrincipal) userDetailsService.loadUserByUsername(username);
 
