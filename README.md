@@ -32,8 +32,8 @@ security/
 │   ├── RoleRepository.java
 │   └── UserRepository.java
 └── service/
-├── AuthService.java
-└── UserDetailsServiceImpl.java
+    ├── AuthService.java
+    └── UserDetailsServiceImpl.java
 ```
 
 ### 2. Required Dependencies
